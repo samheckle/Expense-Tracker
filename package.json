@@ -1,0 +1,24 @@
+{
+  "name": "heckle-project-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
+  "scripts": {
+    "test": "echo Tests Complete"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theheckle/430-project-1.git"
+  },
+  "author": "Sam Heckle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theheckle/430-project-1/issues"
+  },
+  "homepage": "https://github.com/theheckle/430-project-1#readme",
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
