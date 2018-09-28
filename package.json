@@ -2,11 +2,16 @@
   "name": "heckle-project-1",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.js",
+  "private": true,
   "scripts": {
-    "start": "node ./src/server.js",
-    "pretest": "eslint ./src --fix",
-    "test": "echo \"Tests complete\" "
+    "buildExample1": "babel ./client/example1.js --presets react --out-file ./hosted/exampleBundle1.js",
+    "build": "npm run buildExample1",
+    "watch": "babel --watch ./client/example1.js --presets react --out-file ./hosted/exampleBundle1.js",
+    "nodemon": "nodemon --watch ./server --watch ./hosted ./server/app.js ",
+    "start": "node ./server/app.js",
+    "pretest": "eslint ./server --fix",
+    "test": "echo \"Tests complete\"",
+    "build1": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -18,9 +23,42 @@
     "url": "https://github.com/theheckle/430-project-1/issues"
   },
   "homepage": "https://github.com/theheckle/430-project-1#readme",
+  "dependencies": {
+    "@material-ui/core": "^3.1.1",
+    "@material-ui/icons": "^3.0.1",
+    "@material/fab": "^0.40.0",
+    "@material/react-fab": "^0.5.0",
+    "body-parser": "^1.15.0",
+    "compression": "^1.6.1",
+    "connect-redis": "^3.0.2",
+    "cookie-parser": "^1.3.3",
+    "csurf": "^1.8.3",
+    "express": "^4.13.4",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.13.0",
+    "helmet": "^1.3.0",
+    "mongoose": "^4.4.6",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "serve-favicon": "^2.3.0",
+    "underscore": "^1.8.3"
+  },
   "devDependencies": {
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0"
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-cli": "^6.18.0",
+    "babel-loader": "^8.0.2",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^1.0.0",
+    "eslint": "^3.0.0",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.10.1",
+    "file-loader": "^2.0.0",
+    "nodemon": "^1.11.0",
+    "style-loader": "^0.23.0",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1"
   }
 }
