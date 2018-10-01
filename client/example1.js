@@ -1,4 +1,6 @@
 import './style.css';
+import Flipcard from '@kennethormandy/react-flipcard';
+import '@kennethormandy/react-flipcard/dist/Flipcard.css'
 
 const colors = ["#1B998B", "#32021F", "#08415C", "#95190C", "#E3B505"];
 
@@ -26,8 +28,39 @@ class NameForm extends React.Component {
       <form id="categoryForm" action="/addColumn" method="post">
         <label for={this.props.name}>{this.props.name}</label>
         <input type="text" id={this.props.name} name={this.props.name} placeholder={this.props.placeholder}/>
-        <input type="submit" value="Cancel" onClick={this.handleCancel}></input>
         <input type="submit" value="Submit" onClick={this.handleSubmit}></input>
+        <input type="submit" value="Cancel" onClick={this.handleCancel} style={{backgroundColor: "red"}}></input>
+      </form>
+    )
+  }
+}
+
+class ExpenseForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+  }
+
+  handleSubmit(event) {
+    this.props.arr(event,  document.querySelector(`#${this.props.name}`).value);
+    this.handleCancel(event);
+  }
+
+  handleCancel(event){
+    this.props.clicked();
+    const overlay = document.getElementsByClassName("overlay")[0];
+    overlay.style.visibility = "hidden";
+    event.preventDefault();
+  }
+
+  render(){
+    return(
+      <form id="categoryForm" action="/addExpense" method="post">
+        <label for={this.props.name}>{this.props.name}</label>
+        <input type="text" id={this.props.name} name={this.props.name} placeholder={this.props.placeholderExpense}/>
+        <input type="submit" value="Submit" onClick={this.handleSubmit}></input>
+        <input type="submit" value="Cancel" onClick={this.handleCancel} style={{backgroundColor: "red"}}></input>
       </form>
     )
   }
@@ -61,7 +94,7 @@ class ColumnButton extends React.Component {
           this.state.clicked  ?
             <div className="overlay" style={{visibility: "visible"}}>
               <div className="module">
-                <NameForm name={"Category"} placeholder={"eg. Groceries"} arr={this.props.arr} clicked={this.addColumn} statusCode={this.state.statusCode}/>
+                <NameForm name={"Expense"} placeholderExpense={"eg. Groceries"} arr={this.props.arr} clicked={this.addColumn} statusCode={this.state.statusCode}/>
               </div>
             </div>
           :null
@@ -71,16 +104,103 @@ class ColumnButton extends React.Component {
   }
 }
 
+class ExpenseItem extends React.Component{
+  constructor() {
+    super()
+    this.state = {
+      flipped: false,
+    }
+  }
+  render(){
+    return(
+         <Flipcard flipped={this.state.flipped} type="horizontal" onClick={e => this.setState({ flipped: !this.state.flipped })}>
+          <div className="Card" >1</div>
+          <div className="Card" >2</div>
+        </Flipcard>
+    )
+  }
+}
+
+class ExpenseList extends React.Component{
+  constructor(props){
+    super(props);
+  }
+  render(){
+    return(
+      <div>
+        <ExpenseItem />
+      </div>
+    )
+  }
+}
+
 class ExpenseCategory extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      clicked: false,
+      data: [],
+      statusCode: ''
+    }
+    this.addExpenseItem = this.addExpenseItem.bind(this);
+  }
+
+  addExpenseItem(){
+    this.setState(state => ({
+      clicked: !state.clicked
+    }));
+  }
+
+  postNewExpense(event, val){
+    const form1 = document.querySelector("#categoryForm");
+    const method = form1.getAttribute('method');
+    const action = form1.getAttribute('action');
+
+    console.log(action);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, action);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onload = () => {
+      let obj ="";
+      if(xhr.response != ''){
+        obj = JSON.parse(xhr.response);
+      }
+      if(xhr.status === 201){
+        this.state.data.push(val)
+      }
+      this.setState({data: this.state.data, statusCode: xhr.status})
+    };
+    
+    xhr.send(`name=${val}`);
+
+    event.preventDefault();
+    return false;
+
+  }
+
   render() {
     return (
       <div id="columnData">
         <div id="category" style={{backgroundColor: colors[this.props.color], borderTop: `10px solid ${colors[this.props.color]}`}} >
           <h1>{this.props.categoryName}</h1>
+          <ExpenseList />
           <div id="bottom">
-            <button id="add">+</button>
+            <button id="add" onClick={this.addExpenseItem}>+</button>
           </div>
+
         </div>
+          {
+            this.state.clicked  ?
+              <div className="overlay" style={{visibility: "visible"}}>
+                <div className="module">
+                  <NameForm name={"Category"} placeholder={"eg. Groceries"} clicked={this.addColumn}/>
+                </div>
+              </div>
+            :null
+          }
         </div>
     )
   }

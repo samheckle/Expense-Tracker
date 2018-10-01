@@ -134,3 +134,16 @@ label {
     margin-right: 0;
     height: 100%;
 }
+
+.Card{
+    background-color: white;
+    border-radius: 2%;
+    width: 90% !important; 
+    margin: auto;
+}
+
+.Flipcard-flipper,
+.Flipcard-front,
+.Flipcard-back{
+    width: 100%;
+}

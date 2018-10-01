@@ -4,8 +4,8 @@ const controllers = require('./controllers');
 const router = (app) => {
   app.get('/example1', controllers.example1);
   app.get('/', controllers.example1);
-  app.get('/getUsers', controllers.getUsers);
   app.post('/addColumn', controllers.handleCategoryPost);
+  app.post('/addExpense', controllers.handleCategoryPost);
 };
 
 module.exports = router;

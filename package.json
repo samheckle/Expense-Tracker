@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/theheckle/430-project-1#readme",
   "dependencies": {
+    "@kennethormandy/react-flipcard": "^0.4.3",
     "@material-ui/core": "^3.1.1",
     "@material-ui/icons": "^3.0.1",
     "@material/fab": "^0.40.0",
