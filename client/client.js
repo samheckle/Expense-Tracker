@@ -66,7 +66,7 @@ class ExpenseForm extends React.Component {
         <label for="Item">Item</label>
         <input type="text" id="Item" name="Item" placeholder="eg. Taco Bell" />
         {/* amount */}
-        <label for="Amount">Amount</label>
+        <label for="Amount">Price</label>
         <input type="text" id="Amount" name="Amount" placeholder="eg. 14.50" />
         {/* date */}
         <label for="Date">Date</label>
@@ -133,17 +133,20 @@ class ExpenseItem extends React.Component {
       <Flipcard flipped={this.state.flipped} type="horizontal" onClick={e => this.setState({ flipped: !this.state.flipped })}>
         <div className="Card">
           <div className="date">
-            {this.props.data[2]}
+            <div className="title">
+              {this.props.data[0]}
+            </div>
           </div>
           <div className="number">
             {this.props.data[1]}
           </div>
+          
         </div>
         <div className="Card" >
-          <div className="itemTitle">
-            {this.props.data[0]}
+          <div className="date">
+            {this.props.data[2]}
           </div>
-          <div>
+          <div className="note">
             {this.props.data[3]}
           </div>
         </div>
@@ -161,6 +164,17 @@ class ExpenseList extends React.Component {
     };
     this.createNodes = this.createNodes.bind(this);
     this.expenseNodes = [];
+    this.prev = this.props.previousDataCards;
+    if (this.prev != undefined && this.prev.length > 0) {
+      for (var i = 0; i < this.prev.length; i++) {
+        const obj = this.prev[i];
+        var result = Object.keys(obj).map(function(key) {
+          return obj[key];
+        });
+        const expenseNode = <ExpenseItem data={result} />;
+        this.expenseNodes.push(expenseNode);
+      }
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState){
@@ -171,6 +185,7 @@ class ExpenseList extends React.Component {
     switch (this.props.statusCode) {
       case 201:
         console.dir(`${this.props.statusCode}: Created expense!`)
+        console.dir(this.props.data);
         const expenseNode = <ExpenseItem data={this.props.data} />;
         this.expenseNodes.push(expenseNode);
         return this.expenseNodes;
@@ -245,7 +260,7 @@ class ExpenseCategory extends React.Component {
       <div id="columnData">
         <div id="category" style={{ backgroundColor: colors[this.props.color], borderTop: `10px solid ${colors[this.props.color]}` }} >
           <h1>{this.props.categoryName}</h1>
-          <ExpenseList data={this.state.data} statusCode={this.state.statusCode} previousDataCards={this.props.previousDataCards} />
+          <ExpenseList category={this.props.categoryName} data={this.state.data} statusCode={this.state.statusCode} previousDataCards={this.props.previousDataCards} />
           <div id="bottom">
             <button id="add" onClick={this.addExpenseItem}>+</button>
           </div>
@@ -394,8 +409,6 @@ const init = () => {
     switch (xhr.status) {
       case 200:
         console.dir(xhr.status + " OK")
-      case 404:
-        alert(obj.message);
     }
     ReactDOM.render(
       <Page previousDataColumns={arrayColumns} previousDataCards={obj.cards} statusCode={xhr.status} />,

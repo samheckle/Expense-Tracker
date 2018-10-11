@@ -1,5 +1,5 @@
 const columns = {};
-const cards = {};
+const cards = [];
 
 const respondJSON = (request, response, status, object) => {
   response.writeHead(status, {
@@ -76,13 +76,14 @@ const handleExpensePost = (req, res, body) => {
   }
 
   const responseCode = 201;
-
-  cards[body.item] = {
+  
+  const obj = {
     item: body.item,
     amount: body.amount,
     date: body.date,
     notes: body.notes,
   };
+  cards.push(obj);
 
   if (responseCode === 201) {
     responseJSON.message = 'created successfully';
