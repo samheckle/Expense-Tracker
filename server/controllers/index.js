@@ -1,23 +1,19 @@
-const example1 = (req, res) => {
-  res.render('example1');
-};
-
 const columns = {};
+const cards = {};
 
 const respondJSON = (request, response, status, object) => {
-  response.format({
-    'application/json'() {
-      response.status(status).json(object);
-    },
-    default() {
-      // log the request and respond with 406
-      response.status(406).send('Not Acceptable');
-    },
+  response.writeHead(status, {
+    'Content-Type': 'application/json',
   });
+  response.write(JSON.stringify(object));
+  response.end();
 };
 
 const respondJSONMeta = (request, response, status) => {
-  response.status(status).send();
+  response.writeHead(status, {
+    'Content-Type': 'application/json',
+  });
+  response.end();
 };
 
 const notFound = (request, response) => {
@@ -33,24 +29,24 @@ const notFound = (request, response) => {
   return respondJSONMeta(request, response, 404);
 };
 
-const handleCategoryPost = (req, res) => {
+const handleCategoryPost = (req, res, body) => {
   const responseJSON = {
     message: 'Category name required',
   };
 
-  if (req.body.name === '') {
+  if (body.name === '') {
     responseJSON.id = 'missingParams';
     return respondJSON(req, res, 400, responseJSON);
   }
 
   let responseCode = 201;
-  if (columns[req.body.name]) {
+  if (columns[body.name]) {
     responseCode = 204;
   } else {
-    columns[req.body.name] = {};
+    columns[body.name] = {};
   }
 
-  columns[req.body.name].name = req.body.name;
+  columns[body.name].name = body.name;
 
   if (responseCode === 201) {
     responseJSON.message = 'created successfully';
@@ -60,24 +56,33 @@ const handleCategoryPost = (req, res) => {
   return respondJSONMeta(req, res, responseCode);
 };
 
-const handleExpensePost = (req, res) => {
-  const responseJSON = {
-    message: 'Category name required',
+const handleExpensePost = (req, res, body) => {
+  let responseJSON = {
+    message: 'Missing ',
   };
 
-  if (req.body.name === '') {
+  if (body.item === '' || body.amount === '' || body.date === '') {
     responseJSON.id = 'missingParams';
+    if(body.item === ''){
+      responseJSON.message += "item name "
+    }
+    if(body.amount === ''){
+      responseJSON.message +="amount ";
+    }
+    if(body.date === ''){
+      responseJSON.message += "date";
+    }
     return respondJSON(req, res, 400, responseJSON);
   }
 
-  let responseCode = 201;
-  if (columns[req.body.name]) {
-    responseCode = 204;
-  } else {
-    columns[req.body.name] = {};
-  }
+  const responseCode = 201;
 
-  columns[req.body.name].name = req.body.name;
+  cards[body.item] = {
+    item: body.item,
+    amount: body.amount,
+    date: body.date,
+    notes: body.notes,
+  };
 
   if (responseCode === 201) {
     responseJSON.message = 'created successfully';
@@ -85,12 +90,25 @@ const handleExpensePost = (req, res) => {
   }
 
   return respondJSONMeta(req, res, responseCode);
+};
+
+const handleGet = (req, res) => {
+  const responseJSON = {
+    columns,
+    cards,
+  };
+
+  if (req.method === 'GET') {
+    respondJSON(req, res, 200, responseJSON);
+  } else {
+    respondJSONMeta(req, res, 200);
+  }
 };
 
 
 module.exports = {
   notFound,
-  example1,
   handleCategoryPost,
   handleExpensePost,
+  handleGet,
 };

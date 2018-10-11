@@ -112,21 +112,21 @@ input[type=submit]:hover {
 .module{
     background-color: white;
     opacity: 1;
-    height: 25%;
     width: 50%;
-    margin: auto;
     position: absolute;
-    top: 25%;
-    left: 25%;
+    top: 20%;
+    left: 20%;
     border-radius:20px;
     text-align: center;
     font-size:24px;
+    padding: 5%;
 }
 
 label {
     display: block;
-    text-align: center;
-    margin: 5%;
+    text-align: left;
+    margin-left: 15%;
+    margin-top: 2%;
 }
 
 #nodes{
@@ -140,10 +140,41 @@ label {
     border-radius: 2%;
     width: 90% !important; 
     margin: auto;
+    word-wrap: break-word;
+    height: 100%;
+    overflow-x: auto;
+    box-shadow: 2px 2px black;
+    padding-left: 2px;
+    opacity: .9;
 }
 
 .Flipcard-flipper,
 .Flipcard-front,
 .Flipcard-back{
     width: 100%;
+    position: relative;
+    height:90%;
+}
+
+.Flipcard{
+    display: block;
+    height: 10%;
+}
+
+#node-cards{
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    overflow: auto;
+}
+
+.number{
+    font-size: 3em;
+    text-align: center;
+}
+.itemTitle{
+    font-size: 2em;
+}
+.date{
+    color: grey;
 }

@@ -4,14 +4,11 @@
   "description": "",
   "private": true,
   "scripts": {
-    "buildExample1": "babel ./client/example1.js --presets react --out-file ./hosted/exampleBundle1.js",
-    "build": "npm run buildExample1",
-    "watch": "babel --watch ./client/example1.js --presets react --out-file ./hosted/exampleBundle1.js",
+    "build": "webpack --watch",
     "nodemon": "nodemon --watch ./server --watch ./hosted ./server/app.js ",
     "start": "node ./server/app.js",
     "pretest": "eslint ./server --fix",
-    "test": "echo \"Tests complete\"",
-    "build1": "webpack --watch"
+    "test": "echo \"Tests complete\""
   },
   "repository": {
     "type": "git",

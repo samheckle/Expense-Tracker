@@ -1,36 +1,76 @@
 // import libraries
-const path = require('path');
-const express = require('express');
-const compression = require('compression');
-const favicon = require('serve-favicon');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const expressHandlebars = require('express-handlebars');
+const http = require('http');
+const url = require('url');
+const query = require('querystring');
+const responseHandler = require('./htmlResponses.js');
+const jsonHandler = require('./controllers/index.js');
 
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-// pull in our routes
-const router = require('./router.js');
+const urlStruct = {
+  '/': responseHandler.getIndex,
+  '/style.css': responseHandler.getCSS,
+  '/bundle.js': responseHandler.getBundle,
+  '/addColumn': jsonHandler.handleCategoryPost,
+  '/addExpense': jsonHandler.handleExpensePost,
+  '/getPage': jsonHandler.handleGet,
+  notFound: jsonHandler.notFound,
+  index: responseHandler.getIndex,
+};
 
-const app = express();
-app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
-app.use(favicon(`${__dirname}/../hosted/img/favicon.ico`));
-app.use(compression());
-app.use(bodyParser.urlencoded({
-  extended: true,
-}));
-app.engine('handlebars', expressHandlebars());
-app.set('view engine', 'handlebars');
-app.set('views', `${__dirname}/../views`);
-app.disable('x-powered-by');
-app.use(cookieParser());
+const handlePost = (request, response, parsedUrl) => {
+  const body = [];
 
-router(app);
+  request.on('error', (err) => {
+    console.dir(err);
+    response.statusCode = 400;
+    response.end();
+  });
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
 
-app.listen(port, (err) => {
-  if (err) {
-    throw err;
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+
+    const bodyParams = query.parse(bodyString);
+    if (parsedUrl.pathname === '/addColumn') {
+      jsonHandler.handleCategoryPost(request, response, bodyParams);
+    } else if (parsedUrl.pathname === '/addExpense') {
+      jsonHandler.handleExpensePost(request, response, bodyParams);
+    }
+  });
+};
+
+const handleGet = (request, response, parsedUrl) => {
+  if (urlStruct[parsedUrl.pathname]) {
+    urlStruct[parsedUrl.pathname](request, response);
+  } else {
+    urlStruct.notFound(request, response);
   }
-  console.log(`Listening on port ${port}`);
-});
+};
+
+const handleHead = (request, response, parsedUrl) => {
+  if (urlStruct[parsedUrl.pathname]) {
+    urlStruct[parsedUrl.pathname](request, response);
+  } else {
+    urlStruct.notFound(request, response);
+  }
+};
+
+const onRequest = (request, response) => {
+  const parsedUrl = url.parse(request.url);
+
+  if (request.method === 'POST') {
+    handlePost(request, response, parsedUrl);
+  } else if (request.method === 'HEAD') {
+    handleHead(request, response, parsedUrl);
+  } else {
+    handleGet(request, response, parsedUrl);
+  }
+};
+
+http.createServer(onRequest).listen(port);
+
+console.log(`Listening on 127.0.0.1: ${port}`);
