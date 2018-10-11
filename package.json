@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "webpack --watch",
-    "nodemon": "nodemon --watch ./server --watch ./hosted ./server/app.js ",
-    "start": "node ./server/app.js",
+    "nodemon": "nodemon --watch ./server --watch ./hosted ./server/server.js ",
+    "start": "node ./server/server.js",
     "pretest": "eslint ./server --fix",
     "test": "echo \"Tests complete\""
   },

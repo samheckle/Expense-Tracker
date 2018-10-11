@@ -57,26 +57,26 @@ const handleCategoryPost = (req, res, body) => {
 };
 
 const handleExpensePost = (req, res, body) => {
-  let responseJSON = {
+  const responseJSON = {
     message: 'Missing ',
   };
 
   if (body.item === '' || body.amount === '' || body.date === '') {
     responseJSON.id = 'missingParams';
-    if(body.item === ''){
-      responseJSON.message += "item name "
+    if (body.item === '') {
+      responseJSON.message += 'item name ';
     }
-    if(body.amount === ''){
-      responseJSON.message +="amount ";
+    if (body.amount === '') {
+      responseJSON.message += 'amount ';
     }
-    if(body.date === ''){
-      responseJSON.message += "date";
+    if (body.date === '') {
+      responseJSON.message += 'date';
     }
     return respondJSON(req, res, 400, responseJSON);
   }
 
   const responseCode = 201;
-  
+
   const obj = {
     item: body.item,
     amount: body.amount,
