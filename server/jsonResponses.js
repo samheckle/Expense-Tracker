@@ -108,10 +108,6 @@ const handleGet = (req, res, parsedUrl) => {
     cards,
   };
   if (req.method === 'GET') {
-    let str;
-    if (parsedUrl !== undefined) {
-      str = parsedUrl.replace('false', 'true');
-    }
     respondJSON(req, res, 200, responseJSON);
   } else {
     respondJSONMeta(req, res, 200);
