@@ -45,7 +45,7 @@ const handlePost = (request, response, parsedUrl) => {
 
 const handleGet = (request, response, parsedUrl) => {
   if (urlStruct[parsedUrl.pathname]) {
-    urlStruct[parsedUrl.pathname](request, response);
+    urlStruct[parsedUrl.pathname](request, response, parsedUrl.query);
   } else {
     urlStruct.notFound(request, response);
   }

@@ -93,13 +93,17 @@ const handleExpensePost = (req, res, body) => {
   return respondJSONMeta(req, res, responseCode);
 };
 
-const handleGet = (req, res) => {
+const handleGet = (req, res, parsedUrl) => {
   const responseJSON = {
     columns,
     cards,
   };
-
   if (req.method === 'GET') {
+    if(parsedUrl != undefined){
+      let str = parsedUrl.replace('false', 'true')
+      parsedUrl = str;
+    }
+    req.url = req.url.replace("refresh=false", parsedUrl)
     respondJSON(req, res, 200, responseJSON);
   } else {
     respondJSONMeta(req, res, 200);

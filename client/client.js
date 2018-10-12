@@ -1,9 +1,13 @@
+// imports for react
+
 import './style.css';
 import Flipcard from '@kennethormandy/react-flipcard';
 import '@kennethormandy/react-flipcard/dist/Flipcard.css'
 
+// constant color value to hold the colors of the columns
 const colors = ["#1B998B", "#32021F", "#08415C", "#95190C", "#E3B505"];
 
+// component that creates the column name form
 class NameForm extends React.Component {
   constructor(props) {
     super(props);
@@ -11,11 +15,13 @@ class NameForm extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
   }
 
+  // event handler for the submit event
   handleSubmit(event) {
     this.props.arr(event, document.querySelector(`#${this.props.name}`).value);
     this.handleCancel(event);
   }
 
+  // event handler for after the submit or cancel so the module goes away
   handleCancel(event) {
     this.props.clicked();
     const overlay = document.getElementsByClassName("overlay")[0];
@@ -23,6 +29,7 @@ class NameForm extends React.Component {
     event.preventDefault();
   }
 
+  // render the category name form component and set the form values
   render() {
     return (
       <form id="categoryForm" action="/addColumn" method="post">
@@ -35,6 +42,7 @@ class NameForm extends React.Component {
   }
 }
 
+// component that creates the expense form
 class ExpenseForm extends React.Component {
   constructor(props) {
     super(props);
@@ -42,6 +50,7 @@ class ExpenseForm extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
   }
 
+  // handles the submission of the event
   handleSubmit(event) {
     let data = [];
     data.push(document.querySelector("#Item").value);
@@ -52,6 +61,7 @@ class ExpenseForm extends React.Component {
     this.handleCancel(event);
   }
 
+  // handles making the module go away
   handleCancel(event) {
     this.props.clicked();
     const overlay = document.getElementsByClassName("overlay")[0];
@@ -59,6 +69,7 @@ class ExpenseForm extends React.Component {
     event.preventDefault();
   }
 
+  // render the form using HTML, creating the post request
   render() {
     return (
       <form id="categoryForm" action="/addExpense" method="post">
@@ -83,23 +94,28 @@ class ExpenseForm extends React.Component {
   }
 }
 
+// component that creates the grey column button
 class ColumnButton extends React.Component {
   constructor(props) {
     super(props);
     this.addColumn = this.addColumn.bind(this);
+
+    // sets state values to check if the column has been clicked and what the status code is
     this.state = {
       clicked: false,
       statusCode: this.props.statusCode
     };
   }
 
+  // sets the status code and clicked value, which causes a re-render
   addColumn() {
     this.setState(state => ({
-      clicked: !state.clicked
+      clicked: !state.clicked,
+      statusCode: this.props.statusCode 
     }));
-    this.setState({ statusCode: this.props.statusCode })
   }
 
+  // render the column itself and will cause the category name form to pop up if clicked
   render() {
     return (
       <div id="columnButton">
@@ -121,13 +137,18 @@ class ColumnButton extends React.Component {
   }
 }
 
+// creates an expense item card
 class ExpenseItem extends React.Component {
   constructor() {
     super()
+
+    // sets the original state to front side of card
     this.state = {
       flipped: false,
     }
   }
+
+  // renders the card component using the flipcard library, this displays the card
   render() {
     return (
       <Flipcard flipped={this.state.flipped} type="horizontal" onClick={e => this.setState({ flipped: !this.state.flipped })}>
@@ -155,6 +176,7 @@ class ExpenseItem extends React.Component {
   }
 }
 
+// list of each of the expense cards and will re-initialize if the page is reloaded
 class ExpenseList extends React.Component {
   constructor(props) {
     super(props);
@@ -164,6 +186,8 @@ class ExpenseList extends React.Component {
     };
     this.createNodes = this.createNodes.bind(this);
     this.expenseNodes = [];
+
+    // check for any previous data if the page has been reloaded
     this.prev = this.props.previousDataCards;
     if (this.prev != undefined && this.prev.length > 0) {
       for (var i = 0; i < this.prev.length; i++) {
@@ -177,10 +201,13 @@ class ExpenseList extends React.Component {
     }
   }
 
+  // will rerender the component if the future data is different from the current data
   shouldComponentUpdate(nextProps, nextState){
     return (nextProps.data != this.props.data);
   }
 
+  // creates the expense nodes objects and returns status codes
+  // this will not check for repeating values because you can have multiple expenses
   createNodes() {
     switch (this.props.statusCode) {
       case 201:
@@ -196,11 +223,13 @@ class ExpenseList extends React.Component {
     }
   }
 
+  // renders the cards
   render() {
     return <div id="node-cards">{this.createNodes()}</div>
   }
 }
 
+// component that holds each individual category column 
 class ExpenseCategory extends React.Component {
   constructor(props) {
     super(props);
@@ -219,6 +248,7 @@ class ExpenseCategory extends React.Component {
     }));
   }
 
+  // handles the post for when a new expense item is created
   postNewExpense(event, val) {
     const form1 = document.querySelector("#categoryForm");
     const method = form1.getAttribute('method');
@@ -231,6 +261,7 @@ class ExpenseCategory extends React.Component {
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('Accept', 'application/json');
 
+    // handles the post and pushes the data of the expense array so that the expense cards can contain these values
     xhr.onload = () => {
       this.state.data = [];
       let obj = "";
@@ -255,6 +286,8 @@ class ExpenseCategory extends React.Component {
 
   }
 
+  // renders each column and the list of expenses associated with them
+  // also checks if the button is clicked to pull up the expense form module
   render() {
     return (
       <div id="columnData">
@@ -280,6 +313,7 @@ class ExpenseCategory extends React.Component {
   }
 }
 
+// component that holds the list of columns on the page, it will create a new column if the column button is clicked
 class CategoryList extends React.Component {
   constructor(props) {
     super(props);
@@ -291,6 +325,8 @@ class CategoryList extends React.Component {
     this.display = "none";
     this.colorArray = [];
     this.expenseNodes = [];
+    
+    // this creates the previous column data so that the columns can persist after each page reload
     if (this.state.data != undefined && this.state.data.length > 0) {
       for (var i = 0; i < this.state.data.length; i++) {
         this.colorArray.push(Math.floor(Math.random() * 5));
@@ -301,6 +337,8 @@ class CategoryList extends React.Component {
     }
   }
 
+  // creates each column node in the list of columns
+  // this will check for repeating values
   createNodes() {
     this.display = "inline-block";
     switch (this.props.statusCode) {
@@ -320,11 +358,13 @@ class CategoryList extends React.Component {
     }
   }
 
+  // render the list of columns that exist on the page
   render() {
     return <div id="nodes" style={{ display: `${this.display}` }}>{this.createNodes()}</div>;
   }
 }
 
+// component that holds all of the page content
 class Page extends React.Component {
   constructor(props) {
     super(props);
@@ -339,6 +379,7 @@ class Page extends React.Component {
     this.resetColumns();
   }
 
+  // post request for each column 
   postNewColumn(event, val) {
     const form1 = document.querySelector("#categoryForm");
     const method = form1.getAttribute('method');
@@ -373,6 +414,7 @@ class Page extends React.Component {
 
   }
 
+  // checks for previous column data 
   resetColumns() {
     if (this.props.previousDataColumns != undefined && this.props.previousDataColumns.length > 0) {
       for (var i = 0; i < this.props.previousDataColumns.length; i++) {
@@ -382,6 +424,7 @@ class Page extends React.Component {
     }
   }
 
+  // renders the page with the column list and the button that creates new columns
   render() {
     return (
       <div id="main">
@@ -392,8 +435,10 @@ class Page extends React.Component {
   }
 }
 
+// initializes the page and checks if there is previous data that exists
 const init = () => {
-  const method = '/getPage';
+  let initilize = true;
+  const method = `/getPage?init=${initilize}`;
   const xhr = new XMLHttpRequest();
   xhr.open("GET", method);
   xhr.setRequestHeader('Accept', 'application/json');
@@ -419,9 +464,24 @@ const init = () => {
   xhr.send();
 }
 
-window.onload = init;
+// checks to see if the page is about to be reloaded
+const close = () => {
+  let initialize=false;
+  const method = `/getPage?init=${initialize}`;
+  const xhr = new XMLHttpRequest();
+  xhr.open("HEAD", method);
+  xhr.setRequestHeader('Accept', 'application/json');
+  xhr.onload = () => {
+    
+    console.dir("HEAD " + method);
+    switch (xhr.status) {
+      case 200:
+        console.dir(xhr.status + " OK")
+    }
+  }
 
-// ReactDOM.render(
-//   <Page previousDataColumns={null} previousDataCards={null}/>,
-//   document.getElementById('app')
-// );  
+  xhr.send();
+}
+
+window.onload = init;
+window.onbeforeunload = close;
