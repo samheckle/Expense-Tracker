@@ -112,7 +112,6 @@ const handleGet = (req, res, parsedUrl) => {
     if (parsedUrl !== undefined) {
       str = parsedUrl.replace('false', 'true');
     }
-    req.url(req.url.replace('refresh=false', str));
     respondJSON(req, res, 200, responseJSON);
   } else {
     respondJSONMeta(req, res, 200);
