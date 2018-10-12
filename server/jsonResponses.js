@@ -1,6 +1,8 @@
+// objects that hold values of columns
 const columns = {};
 const cards = [];
 
+// get response with object
 const respondJSON = (request, response, status, object) => {
   response.writeHead(status, {
     'Content-Type': 'application/json',
@@ -9,6 +11,7 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
+// head response with no object
 const respondJSONMeta = (request, response, status) => {
   response.writeHead(status, {
     'Content-Type': 'application/json',
@@ -16,6 +19,7 @@ const respondJSONMeta = (request, response, status) => {
   response.end();
 };
 
+// get response with 404
 const notFound = (request, response) => {
   const responseObj = {
     id: 'notFound',
@@ -29,6 +33,8 @@ const notFound = (request, response) => {
   return respondJSONMeta(request, response, 404);
 };
 
+// handles the creation of a new category
+// does check for repeating values
 const handleCategoryPost = (req, res, body) => {
   const responseJSON = {
     message: 'Category name required',
@@ -56,6 +62,8 @@ const handleCategoryPost = (req, res, body) => {
   return respondJSONMeta(req, res, responseCode);
 };
 
+// handles creation of new expense
+// does not return 204 because repeating values are allowed
 const handleExpensePost = (req, res, body) => {
   const responseJSON = {
     message: 'Missing ',
@@ -93,6 +101,7 @@ const handleExpensePost = (req, res, body) => {
   return respondJSONMeta(req, res, responseCode);
 };
 
+// gets the page when it loads
 const handleGet = (req, res, parsedUrl) => {
   const responseJSON = {
     columns,

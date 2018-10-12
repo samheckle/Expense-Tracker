@@ -5,9 +5,9 @@ const query = require('querystring');
 const responseHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
-
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
+// url struct to manage all of the urls that are needed
 const urlStruct = {
   '/': responseHandler.getIndex,
   '/style.css': responseHandler.getCSS,
@@ -19,6 +19,7 @@ const urlStruct = {
   index: responseHandler.getIndex,
 };
 
+// handles all posts requests so that the data is passed correctly
 const handlePost = (request, response, parsedUrl) => {
   const body = [];
 
@@ -43,6 +44,7 @@ const handlePost = (request, response, parsedUrl) => {
   });
 };
 
+// handles all get requests to route them to the correct url
 const handleGet = (request, response, parsedUrl) => {
   if (urlStruct[parsedUrl.pathname]) {
     urlStruct[parsedUrl.pathname](request, response, parsedUrl.query);
@@ -51,6 +53,7 @@ const handleGet = (request, response, parsedUrl) => {
   }
 };
 
+// handles all head requests to route them to correct url and no repsonse
 const handleHead = (request, response, parsedUrl) => {
   if (urlStruct[parsedUrl.pathname]) {
     urlStruct[parsedUrl.pathname](request, response);
@@ -59,6 +62,7 @@ const handleHead = (request, response, parsedUrl) => {
   }
 };
 
+// routes the HTTP methods to the correct handlers in this file
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
 
@@ -71,6 +75,7 @@ const onRequest = (request, response) => {
   }
 };
 
+// create server
 http.createServer(onRequest).listen(port);
 
 console.log(`Listening on 127.0.0.1: ${port}`);
