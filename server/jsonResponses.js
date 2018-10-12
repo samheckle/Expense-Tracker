@@ -102,7 +102,7 @@ const handleExpensePost = (req, res, body) => {
 };
 
 // gets the page when it loads
-const handleGet = (req, res, parsedUrl) => {
+const handleGet = (req, res) => {
   const responseJSON = {
     columns,
     cards,
